@@ -45,6 +45,11 @@ def get_memes():
   result = memes_schema.dump(all_memes)
   return jsonify(result.data)
 
+@app.route("/meme/<id>", methods=["GET"])
+def get_meme(id):
+  meme = Meme.query.get(id)
+  return meme_schema.jsonify(meme)
+
 @app.route("/add-meme", methods=["POST"])
 def add_meme():
   text = request.json["text"]
@@ -65,6 +70,19 @@ def delete_meme(id):
   db.session.commit()
 
   return jsonify("RECORD DELETED")
+
+@app.route("/meme/<id>", methods=["PUT"])
+def update_meme(id):
+  meme = Meme.query.get(id)
+
+  new_text = request.json["text"]
+  new_favorite = request.json["favorite"]
+
+  meme.text = new_text
+  meme.favorite = new_favorite
+
+  db.session.commit()
+  return meme_schema.jsonify(meme)
 
 if __name__ == "__main__":
   app.debug = True
